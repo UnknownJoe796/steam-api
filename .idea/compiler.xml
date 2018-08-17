@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="lib_main" target="1.8" />
+      <module name="lib_test" target="1.8" />
+      <module name="pty4j_main" target="1.8" />
+      <module name="pty4j_test" target="1.8" />
+      <module name="pty_main" target="1.9" />
+      <module name="pty_test" target="1.9" />
+      <module name="terminal_main" target="1.9" />
+      <module name="terminal_test" target="1.9" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
