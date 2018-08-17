@@ -1,18 +1,17 @@
 package com.ivieleague.steamapi
 
-import com.google.common.collect.Maps
-import com.pty4j.PtyProcess
-import com.pty4j.WinSize
-import java.io.PushbackReader
-import java.io.StringReader
-import java.util.*
+import org.junit.runner.RunWith
 
+import org.junit.Assert.*
+import org.junit.Test
 
-fun main(vararg args: String) {
+class SteamAPISessionTest {
+    @Test
+    fun testInstalled(){
 
-    SteamAPISession().use {
-//        println(it.find("sitelicense"))
-        it.login("UnknownJoe796", "song bean ever ants")
+        SteamAPISession().use {
+            it.login("UnknownJoe796", "song bean ever ants")
+            println(it.installedAndLicensed())
 
 //        println(it.updateAllInfo())
 
@@ -29,5 +28,7 @@ fun main(vararg args: String) {
 //        println(it.currentlyRunning())
 //
 //        println(it.info(hollowKnight))
+        }
     }
+
 }

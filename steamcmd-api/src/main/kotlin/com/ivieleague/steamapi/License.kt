@@ -19,10 +19,6 @@ data class License(
             val stateLine = lines.lastOrNull { it.contains("State") } ?: return null
             val appsLine = lines.lastOrNull { it.contains("Apps") } ?: return null
             val depotsLine = lines.lastOrNull { it.contains("Depots") } ?: ""
-            println("headerLine: $headerLine")
-            println("stateLine: $stateLine")
-            println("appsLine: $appsLine")
-            println("depotsLine: $depotsLine")
             val id = headerLine.filter { it.isDigit() }.toLongOrNull() ?: return null
             val state = stateLine.substringAfter(':').substringBefore('(').trim()
             val appInfo = stateLine.substringAfter(") - ")

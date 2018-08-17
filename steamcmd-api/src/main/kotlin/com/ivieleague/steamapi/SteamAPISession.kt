@@ -8,7 +8,7 @@ import java.io.PushbackReader
 import java.io.Reader
 import java.io.StringReader
 
-class SteamAPISession(): Closeable {
+class SteamAPISession() : Closeable {
     private val process = PtyProcess.exec(
             arrayOf("C:\\Program Files (x86)\\Steam\\steamcmd.exe"),
             Maps.newHashMap(System.getenv())
@@ -30,8 +30,7 @@ class SteamAPISession(): Closeable {
     }
 
     init {
-        val result = fromProcess.readUntilPrompt()
-        println("Setup result: $result")
+        fromProcess.readUntilPrompt()
 //        println("Skip: " + fromProcess.readUntilPrompt())
     }
 
@@ -56,30 +55,42 @@ class SteamAPISession(): Closeable {
         toProcess.write(input)
         toProcess.newLine()
         toProcess.flush()
-        println("Input: $input")
-        println("Skipping input: " + fromProcess.readUntil(input))
         val result = fromProcess.readUntilPrompt()
         return result
     }
 
     //Specific commands
 
-    fun login(username:String, password:String) = command("login \"$username\" \"$password\"")
+    fun login(username: String, password: String) = command("login \"$username\" \"$password\"")
     fun logout() = command("logout")
 
-    fun licenses():List<License>{
+    fun licenses(): List<License> {
         val raw = command("licenses_print").trim().split("License")
         return raw.mapNotNull { License.read(it.lines()) }.toList()
     }
 
-    fun appsLicensed():List<Long> = licenses().flatMap { it.apps }
+    fun installed(): List<Long> {
+        return command("apps_installed").lines()
+                .filter { it.startsWith("AppID") }
+                .map {
+                    it
+                            .substringAfter("AppID ")
+                            .substringBefore(':')
+                            .trim()
+                            .toLong()
+                }
+    }
 
-    fun find(query:String) = command("find $query")
+    fun appsLicensed(): List<Long> = licenses().flatMap { it.apps }
 
-    fun run(id:Long) = command("app_run $id")
-    fun update(id:Long) = command("app_update $id")
-    fun stop(id:Long) = command("app_stop $id")
-    fun info(id:Long) = command("app_info_print $id").substringAfter('{').let {
+    fun installedAndLicensed(): List<Long> = installed().toSet().intersect(appsLicensed().toSet()).toList()
+
+    fun find(query: String) = command("find $query")
+
+    fun run(id: Long) = command("app_run $id")
+    fun update(id: Long) = command("app_update $id")
+    fun stop(id: Long) = command("app_stop $id")
+    fun info(id: Long) = command("app_info_print $id").substringAfter('{').let {
         AppInfo.fromSteamMap(PushbackReader(StringReader(it), 100).readSteamMap())
     }
 
@@ -98,7 +109,7 @@ class SteamAPISession(): Closeable {
             }
             fromProcess.close()
             toProcess.close()
-        } catch(e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
