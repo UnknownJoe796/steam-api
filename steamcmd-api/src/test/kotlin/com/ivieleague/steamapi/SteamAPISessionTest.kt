@@ -11,7 +11,10 @@ class SteamAPISessionTest {
 
         SteamAPISession().use {
             it.login("UnknownJoe796", "song bean ever ants")
-            println(it.installedAndLicensed())
+            repeat(100){ _ ->
+                println(it.command("licenses_print").lines().filter { it.contains("site", true) })
+                Thread.sleep(1000L)
+            }
 
 //        println(it.updateAllInfo())
 

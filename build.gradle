@@ -3,7 +3,7 @@ version '1.0-SNAPSHOT'
 buildscript {
     ext.repositoryGroupName = 'com.ivieleague.steamapi'
     ext.kotlinVersion = '1.2.51'
-    ext.libraryVersion = '0.6.0'
+    ext.libraryVersion = '0.6.1'
     ext.dokkaVersion = '0.9.16'
     repositories {
         jcenter()

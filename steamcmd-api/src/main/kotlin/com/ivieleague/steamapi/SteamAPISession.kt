@@ -8,9 +8,9 @@ import java.io.PushbackReader
 import java.io.Reader
 import java.io.StringReader
 
-class SteamAPISession() : Closeable {
+class SteamAPISession(val steamCmdLocation: String) : Closeable {
     private val process = PtyProcess.exec(
-            arrayOf("C:\\Program Files (x86)\\Steam\\steamcmd.exe"),
+            arrayOf(steamCmdLocation),
             Maps.newHashMap(System.getenv())
     ).apply {
         winSize = WinSize(1000, 50)
