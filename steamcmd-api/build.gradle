@@ -28,7 +28,9 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${rootProject.kotlinVersion}"
+    implementation "com.ivieleague.pty4j:pty4j:0.7.7"
     testImplementation group: 'junit', name: 'junit', version: '4.12'
+
 }
 
 compileKotlin {

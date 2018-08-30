@@ -8,7 +8,7 @@ import java.io.PushbackReader
 import java.io.Reader
 import java.io.StringReader
 
-class SteamAPISession(val steamCmdLocation: String) : Closeable {
+class SteamAPISession(val steamCmdLocation: String, val log:(Char)->Unit = {}) : Closeable {
     private val process = PtyProcess.exec(
             arrayOf(steamCmdLocation),
             Maps.newHashMap(System.getenv())
@@ -22,10 +22,6 @@ class SteamAPISession(val steamCmdLocation: String) : Closeable {
     private val fromProcessError = Thread(StreamGobbler(process.errorStream, System.out)).start()
 
     companion object {
-        val ANSI_START = "\u001B["
-        val ANSI_PARAM = ""
-        val ANSI_INT = " !\"#\$%&'()*+,-./"
-        val ANSI_END = "@A–Z[\\]^_`a–z{|}~"
         val ANSI_REGEX = Regex("\\u001B\\[([0123456789:;<=>?])*([ !\"#\$%&'()*+,-./])*([qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM\\\\@\\[\\]^_`{|}~])")
     }
 
@@ -43,6 +39,7 @@ class SteamAPISession(val steamCmdLocation: String) : Closeable {
             val intResult = read()
             if (intResult == -1) continue
             val charResult = intResult.toChar()
+            log(charResult)
             builder.append(charResult)
         }
 
@@ -65,7 +62,14 @@ class SteamAPISession(val steamCmdLocation: String) : Closeable {
     fun logout() = command("logout")
 
     fun licenses(): List<License> {
-        val raw = command("licenses_print").trim().split("License")
+        val raw = command("licenses_print").trim().split("\nLicense")
+        return raw.mapNotNull {
+            License.read(it.lines())
+        }.toList()
+    }
+
+    fun licensesForApp(id: Long): List<License> {
+        val raw = command("licenses_for_app $id").trim().split("\nLicense")
         return raw.mapNotNull { License.read(it.lines()) }.toList()
     }
 
@@ -96,7 +100,7 @@ class SteamAPISession(val steamCmdLocation: String) : Closeable {
 
     fun updateAllInfo() = command("app_info_update 1")
 
-    fun currentlyRunning() = RunningApp.fromText(command("apps_running"))
+    fun currentlyRunning() = command("apps_running").also { println(it) }.split(" - ").also { println(it) }.mapNotNull { RunningApp.fromText(it) }
 
     override fun close() {
         kill = true

@@ -7,30 +7,37 @@ import org.junit.Test
 
 class SteamAPISessionTest {
     @Test
-    fun testInstalled(){
+    fun testRunning(){
+        SteamAPISession("C:\\Exit\\vrdesktop\\steamcmd\\steamcmd.exe").use {
+            it.login("UnknownJoe796", "song bean ever ants")
+            it.run(367520)
+            Thread.sleep(4000L)
+            println(it.currentlyRunning())
+            Thread.sleep(4000L)
+            it.stop(367520)
+        }
+    }
+    @Test
+    fun testLicenseCheck(){
 
-        SteamAPISession().use {
+        SteamAPISession("C:\\Exit\\vrdesktop\\steamcmd\\steamcmd.exe").use {
             it.login("UnknownJoe796", "song bean ever ants")
             repeat(100){ _ ->
-                println(it.command("licenses_print").lines().filter { it.contains("site", true) })
+                println("Licenses:" + it.licenses().filter{ it.info.contains("site") }.joinToString())
                 Thread.sleep(1000L)
             }
+        }
+    }
+    @Test
+    fun printLicenses(){
 
-//        println(it.updateAllInfo())
-
-//        val games = it.appsLicensed()
-//        println(games.joinToString("\n"))
-//        println("${games.size} games total")
-
-//        val hollowKnight = 367520L
-//        it.run(hollowKnight)
-//        Thread.sleep(5_000L)
-//        println(it.currentlyRunning())
-//        Thread.sleep(5_000L)
-//        it.stop(hollowKnight)
-//        println(it.currentlyRunning())
-//
-//        println(it.info(hollowKnight))
+        SteamAPISession("C:\\Exit\\vrdesktop\\steamcmd\\steamcmd.exe").use {
+            it.login("UnknownJoe796", "song bean ever ants")
+            try{ Thread.sleep(30_000L) } catch(e:Exception){
+                e.printStackTrace()
+            }
+            println(it.command("licenses_print"))
+            println("Licenses:" + it.licenses().filter{ it.info.contains("Site") }.joinToString(", ", "[", "]"))
         }
     }
 
